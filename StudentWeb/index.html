@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Records</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            text-align: center;
+        }
+
+        input {
+            width: 30%;
+            padding: 10px;
+            margin: 8px 0;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border: none;
+            color: white;
+            border-radius: 5px;
+        }
+
+        .addbtn {
+            background-color: green;
+        }
+
+        .updatebtn {
+            background-color: orange;
+        }
+
+        .deletebtn {
+            background-color: red;
+        }
+
+        .showbtn {
+            background-color: blue;
+        }
+        
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid black;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }    
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            font-size: 14px;
+            transition: 0.3s;
+        }
+
+        .update-btn {
+            background-color: #f39c12;
+        }
+
+        .update-btn:hover {
+            background-color: #d68910;
+        }
+
+        .selected-row {
+    background-color: #cce5ff !important;
+}
+                
+    </style>
+</head>
+<body>
+    
+    <div class="container">Student Records<br>
+        
+        Name: <input id="name" type="text" placeholder="Enter name" />
+        Age:   <input id="age" type="number" placeholder="Enter age" /><br>
+        
+        Marks: <input id="marks" type="number" placeholder="Enter marks" />
+        Grade: <input id="grade" type="text" placeholder="Enter grade" /><br>
+        
+        <button class="addbtn" onclick="addRecord()">Add</button><br>
+        <button class="updatebtn" onclick="updateRecord()">Update</button><br>
+        <button class="deletebtn"onclick="deleteRecord()">Delete</button><br>
+        <button class="showbtn" onclick="showRecords()">Show Records</button>
+        <br><br>        
+           <table id="studentTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Age</th>
+                        <th>Marks</th>
+                        <th>Grade</th>  
+                        <th>Action</th>                      
+                    </tr>
+                </thead>   
+                <tbody></tbody>             
+            </table>
+    </div>
+
+        <script>    
+            let students = [];
+            let selectedIndex = -1;
+        function addRecord(){
+                let name = document.getElementById("name").value;
+                let age = document.getElementById("age").value;
+                let marks = document.getElementById("marks").value;
+                let grade = document.getElementById("grade").value;
+                
+
+                if (!name || !age || !marks || !grade ) {
+                alert("Please fill all fields.");
+                return;
+            }
+            students.push({
+            id: students.length + 1,
+            name,
+            age,
+            marks,
+            grade            
+        });
+        clearFields();
+        showRecords();
+    }
+       /*
+            function showRecords() {
+                    let tableBody = document.querySelector("#studentTable tbody");
+                    tableBody.innerHTML = "";
+
+                    students.forEach((student, index) => {
+                        let row = `
+                            <tr>
+                                <td>${student.id}</td>
+                                <td>${student.name}</td>
+                                <td>${student.age}</td>
+                                <td>${student.marks}</td>
+                                <td>${student.grade}</td>
+                                
+                                <td>
+                                    <button class="action-btn update-btn" onclick="selectRecord(${index})">Edit</button>
+                                </td>
+                            </tr>
+                        `;
+                        tableBody.innerHTML += row;
+                    });
+            }*/
+
+        function showRecords() {
+
+            let tableBody = document.querySelector("#studentTable tbody");
+            tableBody.innerHTML = "";
+
+            students.forEach((student, index) => {
+
+                tableBody.innerHTML += `
+                <tr onclick="selectRow(${index}, this)">
+                    <td>${student.id}</td>
+                    <td>${student.name}</td>
+                    <td>${student.age}</td>
+                    <td>${student.marks}</td>
+                    <td>${student.grade}</td>                    
+                     <td>
+                                    <button class="action-btn update-btn" onclick="selectRecord(${index})">Edit</button>
+                                </td>
+                </tr>`;
+            });
+        }
+
+            function selectRecord(index) {
+                selectedIndex = index;
+
+                document.getElementById("name").value = students[index].name;
+                document.getElementById("age").value = students[index].age;
+                document.getElementById("marks").value = students[index].marks;
+                document.getElementById("grade").value = students[index].grade;
+                
+            }
+
+            function updateRecord() {
+                if (selectedIndex === -1) {
+                    alert("Select a record to update.");
+                    return;
+                }
+
+                students[selectedIndex].name =
+                    document.getElementById("name").value;
+                students[selectedIndex].age =
+                    document.getElementById("age").value;
+                students[selectedIndex].marks =
+                    document.getElementById("marks").value;
+                students[selectedIndex].grade =
+                    document.getElementById("grade").value;
+                
+                showRecords();
+                clearFields();
+                selectedIndex = -1;
+            }
+
+            function deleteRecord() {
+
+                if (selectedIndex === -1) {
+                    alert("Please select a row.");
+                    return;
+                }
+
+                students.splice(selectedIndex, 1);
+
+                students.forEach((student, index) => {
+                    student.id = index + 1;
+                });
+
+                selectedIndex = -1;
+
+                clearFields();
+
+                showRecords();
+            }
+
+            function clearFields() {
+                document.getElementById("name").value = "";
+                document.getElementById("age").value = "";
+                document.getElementById("marks").value = "";
+                document.getElementById("grade").value = "";                
+            }
+
+            
+            function selectRow(index, row) {
+
+                selectedIndex = index;
+
+                // Remove highlight from all rows
+                document.querySelectorAll("#studentTable tbody tr")
+                    .forEach(r => r.classList.remove("selected-row"));
+
+                // Highlight selected row
+                row.classList.add("selected-row");
+
+                // Load values into input boxes
+                document.getElementById("name").value =
+                    students[index].name;
+
+                document.getElementById("marks").value =
+                    students[index].marks;
+
+                document.getElementById("grade").value =
+                    students[index].grade;
+
+                document.getElementById("age").value =
+                    students[index].age;
+            }
+        </script>
+</body>
+</html>
