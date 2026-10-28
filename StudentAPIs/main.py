@@ -2,9 +2,24 @@
 #from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi import FastAPI, HTTPException
-app = FastAPI()
+#app = FastAPI()
 import csv
 import os
+
+
+from fastapi.middleware.cors import CORSMiddleware
+
+
+app = FastAPI()
+
+# For this local classroom demo.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["POST"],
+    allow_headers=["Content-Type"],
+)
+
 
 CSV_Folder_Path = os.path.dirname(os.path.abspath(__file__))
 
@@ -149,7 +164,8 @@ class Library(BaseModel):
 @app.post("/libraries")
 def add_library(library: Library):
     Libraries[library.id] = library.model_dump()
-    return library
+    print("******* I am here *******")
+    return {"message":"Library added successfully","Library":library}
 
 @app.delete("/libraries/{library_id}")
 def delete_library(library_id: int):
